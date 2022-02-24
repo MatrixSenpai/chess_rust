@@ -1,4 +1,5 @@
 #![allow(unused, dead_code)]
+#![warn(unused_mut, overflowing_literals)]
 #![forbid(unsafe_code)]
 
 use bevy::prelude::*;
@@ -6,6 +7,7 @@ use bevy_ecs_tilemap::prelude::*;
 
 mod helpers;
 mod board_plugin;
+mod piece_plugin;
 
 fn main() {
     App::new()
@@ -19,6 +21,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(TilemapPlugin)
         .add_plugin(board_plugin::BoardPlugin)
+        .add_plugin(piece_plugin::PiecePlugin)
         .add_startup_system(setup)
         .add_system(helpers::set_texture_filters_to_nearest)
         .run();

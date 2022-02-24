@@ -68,14 +68,7 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
         TextureSize(1999.2, 668.0),
     );
 
-    let (mut layer_builder, layer_1_entity) = LayerBuilder::<TileBundle>::new(&mut commands, layer_settings, 0u16, 1u16);
-    layer_builder.set_tile(
-        TilePos(4, 4),
-        Tile {
-            texture_index: 1,
-            ..Default::default()
-        }.into()
-    );
+    let (layer_builder, layer_1_entity) = LayerBuilder::<TileBundle>::new(&mut commands, layer_settings, 0u16, 1u16);
     map_query.build_layer(&mut commands, layer_builder, texture_handle);
 
     let map_entity = commands.spawn().id();
