@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use crate::piece_plugin::PieceType;
 
 pub struct BoardPlugin;
 impl Plugin for BoardPlugin {
@@ -26,6 +27,17 @@ impl Default for BoardState {
         Self {
             state: [0; 64],
         }
+    }
+}
+impl BoardState {
+    pub fn set_state(&mut self, x: usize, y: usize, piece: u8) {
+        self.state[x * 8 + y] = piece;
+    }
+    pub fn get_state(&self, x: usize, y: usize) -> u8 {
+        self.state[x * 8 + y]
+    }
+    pub fn is_empty(&self, x: usize, y: usize) -> bool {
+        self.state[x * 8 + y] == 0
     }
 }
 
