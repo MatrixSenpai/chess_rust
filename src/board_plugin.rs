@@ -46,7 +46,7 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
             let _ = layer_builder.set_tile(
                 tile_pos,
                 Tile {
-                    texture_index: if (row + col + 1) % 2 == 0 { 0 } else { 2 },
+                    texture_index: if (row + col + 1) % 2 == 0 { 0 } else { 1 },
                     ..Default::default()
                 }.into()
             );
