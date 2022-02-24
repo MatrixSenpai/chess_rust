@@ -1,0 +1,11 @@
+[package]
+name = "chess"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy_ecs_tilemap = "0.5.0"
+
+[dependencies.bevy]
+version = "0.6.1"
+features = ["dynamic"]
