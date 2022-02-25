@@ -1,14 +1,20 @@
 use std::convert::From;
 use bevy::prelude::*;
+use bevy::ecs::schedule::ShouldRun;
 use bevy_ecs_tilemap::prelude::*;
-use crate::board_plugin::BoardState;
+use crate::board_plugin::{BoardState, MoveList};
 
 pub struct PiecePlugin;
 impl Plugin for PiecePlugin {
     fn build(&self, app: &mut App) {
         app
             .add_startup_system(build_pieces)
-            .add_system(place_pieces);
+            .add_system_set(
+                SystemSet::new()
+                    .label("update_pieces")
+                    .with_run_criteria(run_if_board_updated)
+                    .with_system(place_pieces)
+            );
     }
 }
 
@@ -70,7 +76,7 @@ impl PieceType {
 #[derive(Component)]
 struct Piece(u8);
 
-fn build_pieces(mut commands: Commands, mut board_state: ResMut<BoardState>) {
+fn build_pieces(mut board_state: ResMut<BoardState>) {
     board_state.set_state(0, 0, PieceType::to_u8((PieceType::Rook, PieceType::White)));
     board_state.set_state(1, 0, PieceType::to_u8((PieceType::Knight, PieceType::White)));
     board_state.set_state(2, 0, PieceType::to_u8((PieceType::Bishop, PieceType::White)));
@@ -98,7 +104,14 @@ fn build_pieces(mut commands: Commands, mut board_state: ResMut<BoardState>) {
     }
 }
 
-fn place_pieces(mut commands: Commands, mut map_query: MapQuery, board_state: Res<BoardState>) {
+fn run_if_board_updated(board_state: Res<BoardState>) -> ShouldRun {
+    if board_state.updated {
+        ShouldRun::Yes
+    } else {
+        ShouldRun::No
+    }
+}
+fn place_pieces(mut commands: Commands, mut map_query: MapQuery, mut board_state: ResMut<BoardState>) {
     map_query.despawn_layer_tiles(&mut commands, 0u16, 1u16);
 
     for row in 0..8 {
@@ -110,8 +123,7 @@ fn place_pieces(mut commands: Commands, mut map_query: MapQuery, board_state: Re
             let pc = piece & 0x18;
             let pt = piece & 0x07;
 
-            let texture_index = pt + (pc - 8);
-            println!("piece {:b} pc {:b} pt {:b} texture {}", piece, pc, pt, texture_index);
+            let texture_index = pt + (if pc == 8 { 0 } else { 6 });
             let tile_result = map_query.set_tile(
                 &mut commands,
                 pos,
@@ -125,4 +137,6 @@ fn place_pieces(mut commands: Commands, mut map_query: MapQuery, board_state: Re
             }
         }
     }
+
+    board_state.updated = false;
 }

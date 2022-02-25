@@ -2,6 +2,7 @@
 #![warn(unused_mut, overflowing_literals)]
 #![forbid(unsafe_code)]
 
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 
@@ -22,6 +23,8 @@ fn main() {
         .add_plugin(TilemapPlugin)
         .add_plugin(board_plugin::BoardPlugin)
         .add_plugin(piece_plugin::PiecePlugin)
+        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
         .add_system(helpers::set_texture_filters_to_nearest)
         .run();
