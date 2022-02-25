@@ -16,7 +16,7 @@ fn main() {
         .insert_resource(WindowDescriptor {
             title: "Chess".to_string(),
             width: 1200.0,
-            height: 1200.0,
+            height: 800.0,
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)

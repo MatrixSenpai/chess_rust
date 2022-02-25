@@ -87,8 +87,8 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
     map_query.build_layer(&mut commands, layer_builder, texture_handle);
     commands.entity(board_layer_entity)
         .insert(Transform {
-            translation: Vec3::new(-510.0, -510.0, 0.0),
-            scale: Vec3::new(8.0, 8.0, 0.0),
+            translation: Vec3::new(-310.0, -310.0, 0.0),
+            scale: Vec3::new(5.0, 5.0, 0.0),
             ..Default::default()
         });
 
@@ -105,8 +105,8 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
     map_query.build_layer(&mut commands, layer_builder, texture_handle);
     commands.entity(piece_layer_entity)
         .insert(Transform {
-            translation: Vec3::new(-510.0, -510.0, 0.0),
-            scale: Vec3::new(0.40, 0.40, 0.0),
+            translation: Vec3::new(-310.0, -310.0, 0.0),
+            scale: Vec3::new(0.25, 0.25, 0.0),
             ..Default::default()
         });
 
