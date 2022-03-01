@@ -19,7 +19,7 @@ struct MousePos(f32, f32);
 #[derive(Default, Eq, PartialEq, Copy, Clone)]
 pub struct HoveredCell(pub u8, pub u8);
 #[derive(Default)]
-pub struct SelectedCell(u8, u8);
+pub struct SelectedCell(pub u8, pub u8);
 
 fn setup_camera(mut commands: Commands) {
     commands.spawn()
@@ -50,6 +50,8 @@ fn translate_to_hover(mut commands: Commands, mouse_position: Option<Res<MousePo
         if let Some((x, y)) = normalized {
             commands.insert_resource(HoveredCell(x, y));
         }
+    } else {
+        commands.remove_resource::<HoveredCell>();
     }
 }
 

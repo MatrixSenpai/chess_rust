@@ -1,6 +1,7 @@
+use bevy::input::{ElementState, mouse::MouseButtonInput};
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
-use crate::camera_plugin::HoveredCell;
+use crate::camera_plugin::{HoveredCell, SelectedCell};
 use crate::piece_plugin::PieceType;
 
 pub struct BoardPlugin;
@@ -10,7 +11,8 @@ impl Plugin for BoardPlugin {
             .init_resource::<BoardState>()
             .init_resource::<MoveList>()
             .add_startup_system(create_board)
-            .add_system(color_board);
+            .add_system(color_board)
+            .add_system(handle_cell_selection);
     }
 }
 
@@ -126,7 +128,7 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
         .insert(GlobalTransform::default());
 }
 
-fn color_board(mut commands: Commands, hovered_cell: Option<Res<HoveredCell>>, mut map_query: MapQuery) {
+fn color_board(mut commands: Commands, hovered_cell: Option<Res<HoveredCell>>, selected_cell: Option<Res<SelectedCell>>, mut map_query: MapQuery) {
     for row in 0..8 {
         for column in 0..8 {
             let pos = TilePos(row, column);
@@ -157,4 +159,37 @@ fn color_board(mut commands: Commands, hovered_cell: Option<Res<HoveredCell>>, m
         map_query.notify_chunk_for_tile(pos, 0u16, 0u16);
     }
 
+    if let Some(ref selected_cell) = selected_cell {
+        let pos = TilePos(selected_cell.0 as u32, selected_cell.1 as u32);
+        map_query.set_tile(
+            &mut commands,
+            pos,
+            Tile {
+                texture_index: 4,
+                ..Default::default()
+            },
+            0, 0
+        );
+        map_query.notify_chunk_for_tile(pos, 0u16, 0u16);
+    }
+}
+
+fn handle_cell_selection(mut commands: Commands, mut mouse_events: EventReader<MouseButtonInput>, hovered_cell: Option<Res<HoveredCell>>, selected_cell: Option<ResMut<SelectedCell>>, board: ResMut<BoardState>) {
+    // If we are not hovering inside the board, this should not run
+    if let Some(hovered) = hovered_cell {
+        for event in mouse_events.iter() {
+            match event.state {
+                ElementState::Pressed => {
+                    // Don't care about right click
+                    if event.button == MouseButton::Right { continue }
+
+
+                    commands.insert_resource(SelectedCell(hovered.0, hovered.1))
+                },
+
+                // Don't care about release
+                _ => continue
+            }
+        }
+    }
 }
