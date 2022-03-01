@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use crate::camera_plugin::HoveredCell;
 use crate::piece_plugin::PieceType;
 
 pub struct BoardPlugin;
@@ -8,7 +9,8 @@ impl Plugin for BoardPlugin {
         app
             .init_resource::<BoardState>()
             .init_resource::<MoveList>()
-            .add_startup_system(create_board);
+            .add_startup_system(create_board)
+            .add_system(color_board);
     }
 }
 
@@ -122,4 +124,37 @@ fn create_board(mut commands: Commands, asset_server: Res<AssetServer>, mut map_
         .insert(Board)
         .insert(Transform::default())
         .insert(GlobalTransform::default());
+}
+
+fn color_board(mut commands: Commands, hovered_cell: Option<Res<HoveredCell>>, mut map_query: MapQuery) {
+    for row in 0..8 {
+        for column in 0..8 {
+            let pos = TilePos(row, column);
+            map_query.set_tile(
+                &mut commands,
+                pos,
+                Tile {
+                    texture_index: if (row + column + 1) % 2 == 0 { 0 } else { 1 },
+                    ..Default::default()
+                },
+                0, 0
+            );
+            map_query.notify_chunk_for_tile(pos, 0u16, 0u16);
+        }
+    }
+
+    if let Some(ref hovered_cell) = hovered_cell {
+        let pos = TilePos(hovered_cell.0 as u32, hovered_cell.1 as u32);
+        map_query.set_tile(
+            &mut commands,
+            pos,
+            Tile {
+                texture_index: 3,
+                ..Default::default()
+            },
+            0, 0
+        );
+        map_query.notify_chunk_for_tile(pos, 0u16, 0u16);
+    }
+
 }

@@ -9,6 +9,7 @@ use bevy_ecs_tilemap::prelude::*;
 mod helpers;
 mod board_plugin;
 mod piece_plugin;
+mod camera_plugin;
 
 fn main() {
     App::new()
@@ -23,14 +24,14 @@ fn main() {
         .add_plugin(TilemapPlugin)
         .add_plugin(board_plugin::BoardPlugin)
         .add_plugin(piece_plugin::PiecePlugin)
-        .add_plugin(LogDiagnosticsPlugin::default())
-        .add_plugin(FrameTimeDiagnosticsPlugin::default())
+        .add_plugin(camera_plugin::CameraPlugin)
+        // .add_plugin(LogDiagnosticsPlugin::default())
+        // .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
         .add_system(helpers::set_texture_filters_to_nearest)
         .run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands.spawn_bundle(UiCameraBundle::default());
 }
